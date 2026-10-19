@@ -1,5 +1,6 @@
 import pytest
-from src.app import create_app, db, User, Role
+from src.app import bcrypt, create_app
+from src.models import db, User, Role
 
 @pytest.fixture()
 def app():
@@ -20,8 +21,13 @@ def access_token(client):
     db.session.add(role)
     db.session.commit()
     user = User(username="damb", password="test", role_id=role.id)
+    password = user.password
+    user.password = bcrypt.generate_password_hash(password).decode("utf-8")
     db.session.add(user)
     db.session.commit()
 
-    result = client.post("/auth/login/", json={"username": user.username, "password": user.password})
+    result = client.post(
+        "/auth/login/",
+        json={"username": user.username, "password": password},
+    )
     return result.json["access_token"]

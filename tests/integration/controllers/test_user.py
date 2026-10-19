@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from sqlalchemy import func
-from src.app import User, Role, db
+from src.models import User, Role, db
 
 def test_get_user_success(client):
     role = Role(name="admin")
